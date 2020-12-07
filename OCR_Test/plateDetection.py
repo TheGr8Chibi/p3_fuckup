@@ -217,9 +217,9 @@ def trackEdge(img):
     print('Completed')
 
     cv2.imwrite('edge.jpg',img)
-    #plt.imshow(img, cmap='gray')
-    #plt.title("Edge tracking")
-    #plt.show()
+    plt.imshow(img, cmap='gray')
+    plt.title("Edge tracking")
+    plt.show()
 
     detectPlate(img)
 
@@ -249,8 +249,8 @@ def detectPlate(img):
     x, y, w, h = cv2.boundingRect(cnt)
     cv2.rectangle(binaryImg, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
-    nummerpladeFrame = binaryImg[y: y + h, x+10: x + w-10]
-    nummerpladeFrameInv = binaryImg2[y: y + h, x+10: x + w-10]
+    nummerpladeFrame = binaryImg[y: y + h, x+10: x + w-5]
+    nummerpladeFrameInv = binaryImg2[y: y + h, x+10: x + w-5]
 
     height = 50
     width = int(height * 4.75)
@@ -413,7 +413,6 @@ def templateMatch(imgIn):
     output = "?"
 
     resizedP = cv2.resize(imgIn, (35,45), interpolation=cv2.INTER_AREA)
-    #resizedP = cv2.copyMakeBorder(imgIn, 5, 5, 5, 5, cv2.BORDER_CONSTANT, None, 255)
     for i in range (0, len(charArray)):
         tem = charArray[i]
         cv2.imwrite('tem.png',tem)
