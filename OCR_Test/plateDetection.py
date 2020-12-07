@@ -2,7 +2,6 @@ import math
 import os
 import sys
 from collections import deque
-
 import imutils
 
 TS = False
@@ -15,22 +14,17 @@ if TS:
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
-import operator
-
-
 
 MIN_CONTOUR_AREA = 100
 RESIZED_IMAGE_WIDTH = 20
 RESIZED_IMAGE_HEIGHT = 30
 strFinalString = ""  # declare final string, this will have the final number sequence by the end of the program
-# Load original image
-imgOriginal = cv2.imread('License_plates/q24.PNG')
 
-#Tesseract setup
 class Tesseract:
     def __init__(self, img):
         self.img = img
 
+    # Tesseract setup
     def getText(self):
         #Local Tesseract path
         pt.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
@@ -38,10 +32,10 @@ class Tesseract:
         out_below = pt.image_to_string(self.img, config='-c tessedit_char_whitelist=0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ --psm 10')
         print(out_below)
 
-# Empty arrays for the grayscale and binary versions of the image
-grayImg = np.zeros((imgOriginal.shape[0], imgOriginal.shape[1]))
-binaryImg = np.zeros((imgOriginal.shape[0], imgOriginal.shape[1]))
-binaryImg2 = np.zeros((imgOriginal.shape[0], imgOriginal.shape[1]))
+# Empty variables for the grayscale and binary arrays of the image
+grayImg = None
+binaryImg = None
+binaryImg2 = None
 
 #Convolution function
 def convolute(img, filter):
@@ -60,7 +54,6 @@ def convolute(img, filter):
             output[row, col] = np.sum(filter * padded_image[row:row + kernelRow, col:col + kernelCol])
             output[row, col] /= filter.shape[0] * filter.shape[1]
     return output
-
 
 #Gray scaling (Step 1)
 def grayScale(img):
@@ -88,31 +81,21 @@ def grayScale(img):
     cv2.imwrite('binaryImg2.jpg', binaryImg2)
     cv2.imwrite('binaryImg.jpg',binaryImg)
     plt.imshow(grayImg, cmap='gray')
-    plt.title("binary")
+    plt.title("Grayscale")
     plt.show()
     print('Completed')
-    generate_gauss_kernel(5, grayImg)
+    gaussianBlur(5, grayImg)
 
-#Generate 5X5 gaussian kernel (Step 2, pt.1)
-def generate_gauss_kernel(size, img, sigma=1):
-    print('Generating gaussian kernel')
+#Generate 5X5 gaussian kernel and apply filter (Step 2)
+def gaussianBlur(size, img, sigma=1):
+    print('Applying gaussian filter')
     kernel = np.zeros((size,size))
     img = img
     for x in range(0,size):
         for y in range(0,size):
             kernel[x,y] = 1/(np.sqrt(2 * np.pi * sigma ** 2)) * np.e ** (-x**2 + y**2/2*sigma**2)
-    print('Completed')
-    blur(kernel, img)
-
-#Apply the gaussian filter to the image (Step 2, pt.2)
-def blur(kernel,img):
-    print('Applying filter')
     filteredImage = convolute(img, kernel)
-
     print('Completed')
-    #plt.imshow(filteredImage, cmap='gray')
-    #plt.title("Output Image using 5X5 Kernel")
-    #plt.show()
     sobel(filteredImage)
 
 #Apply sobel kernels to the filtered image (Step 3)
@@ -258,7 +241,6 @@ def detectPlate(img):
             aspectRatio = float(w) / h
             if aspectRatio >= 3.9 and aspectRatio <= 5.2:
                 cnt = approx
-
                 break
     if cnt is None:
         print('ERR - No license plate found')
@@ -472,10 +454,12 @@ def loadImages(folder):
             images.append(img)
     print('Completed')
 
-loadImages(r'C:\Users\Mads\Desktop\P3_Projekt-master\OCR_Test\License_plates')
+loadImages(r'C:\Users\Ciprian\Documents\GitHub\p3_fuckup\OCR_Test\License_plates')
 for img in images:
     letters = []
-
+    grayImg = np.zeros((img.shape[0], img.shape[1]))
+    binaryImg = np.zeros((img.shape[0], img.shape[1]))
+    binaryImg2 = np.zeros((img.shape[0], img.shape[1]))
     grayScale(img)
     pl = cv2.imread('plate.jpg')
     cv2.imshow('Plate',pl)
