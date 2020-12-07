@@ -239,7 +239,7 @@ def detectPlate(img):
             print('Width: ' + str(w))
             print('Height: ' + str(h))
             aspectRatio = float(w) / h
-            if aspectRatio >= 3.9 and aspectRatio <= 5.2:
+            if aspectRatio >= 3.9 and aspectRatio <= 5.4:
                 cnt = approx
                 break
     if cnt is None:
@@ -259,7 +259,7 @@ def detectPlate(img):
     resized = cv2.resize(nummerpladeFrame, dim, interpolation=cv2.INTER_AREA)
     resizedInv = cv2.resize(nummerpladeFrameInv, dim, interpolation=cv2.INTER_AREA)
     plate = cv2.imwrite('plate.jpg', nummerpladeFrame)
-    #pl = cv2.imread('plate.jpg')
+    pl = cv2.imread('plate.jpg')
     print('Completed')
 
     #plt.imshow(resized, cmap='gray')
@@ -419,7 +419,7 @@ def templateMatch(imgIn):
         tem = cv2.imread('tem.png',0)
         tem = cv2.resize(tem, (35,45), interpolation=cv2.INTER_AREA)
         res = cv2.matchTemplate(resizedP, tem, cv2.TM_CCOEFF_NORMED)
-        threshold = 0.7
+        threshold = 0.6
         loc = np.where(res >= threshold)
         for pt in zip(*loc[::-1]):
             print(i)
